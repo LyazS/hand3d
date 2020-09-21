@@ -16,7 +16,8 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from __future__ import print_function, unicode_literals
-
+import imageio
+import cv2
 import tensorflow as tf
 import numpy as np
 import scipy.misc
@@ -29,11 +30,10 @@ from utils.general import detect_keypoints, trafo_coords, plot_hand, plot_hand_3
 if __name__ == '__main__':
     # images to be shown
     image_list = list()
-    image_list.append('./data/img.png')
-    image_list.append('./data/img2.png')
-    image_list.append('./data/img3.png')
-    image_list.append('./data/img4.png')
-    image_list.append('./data/img5.png')
+    image_list.append('./data/00001.jpg')
+    image_list.append('./data/00002.jpg')
+    image_list.append('./data/00003.jpg')
+    image_list.append('./data/00004.jpg')
 
     # network input
     image_tf = tf.placeholder(tf.float32, shape=(1, 240, 320, 3))
@@ -50,12 +50,13 @@ if __name__ == '__main__':
     sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 
     # initialize network
+    # sess.run(tf.global_variables_initializer())
     net.init(sess)
 
     # Feed image list through network
     for img_name in image_list:
-        image_raw = scipy.misc.imread(img_name)
-        image_raw = scipy.misc.imresize(image_raw, (240, 320))
+        image_raw = imageio.imread(img_name)
+        image_raw = cv2.resize(image_raw, (320, 240))
         image_v = np.expand_dims((image_raw.astype('float') / 255.0) - 0.5, 0)
 
         hand_scoremap_v, image_crop_v, scale_v, center_v,\

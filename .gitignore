@@ -1,0 +1,5 @@
+data/bin/*
+snapshot*
+/.vscode
+*/__pycache__
+weights/*

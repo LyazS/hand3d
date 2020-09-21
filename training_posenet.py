@@ -17,7 +17,8 @@
 #
 from __future__ import print_function, unicode_literals
 
-import tensorflow as tf
+from tqdm import tqdm
+import tensorflow.compat.v1 as tf
 import os
 import sys
 
@@ -49,7 +50,7 @@ s = data['scoremap'].get_shape().as_list()
 keypoints_scoremap = [tf.image.resize_images(x, (s[1], s[2])) for x in keypoints_scoremap]
 
 # Start TF
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.8)
+gpu_options = tf.GPUOptions(allow_growth=True,)
 sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 tf.train.start_queue_runners(sess=sess)
 
@@ -82,7 +83,7 @@ if not os.path.exists(train_para['snapshot_dir']):
 
 # Training loop
 print('Starting to train ...')
-for i in range(train_para['max_iter']):
+for i in tqdm(range(train_para['max_iter'])):
     _, loss_v = sess.run([train_op, loss])
 
     if (i % train_para['show_loss_freq']) == 0:

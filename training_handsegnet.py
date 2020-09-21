@@ -24,7 +24,7 @@ import sys
 from nets.ColorHandPose3DNetwork import ColorHandPose3DNetwork
 from data.BinaryDbReader import BinaryDbReader
 from utils.general import LearningRateScheduler, load_weights_from_snapshot
-
+from tqdm import tqdm
 # training parameters
 train_para = {'lr': [1e-5, 1e-6, 1e-7],
               'lr_iter': [20000, 30000],
@@ -35,7 +35,7 @@ train_para = {'lr': [1e-5, 1e-6, 1e-7],
 
 # get dataset
 dataset = BinaryDbReader(mode='training',
-                         batch_size=8, shuffle=True,
+                         batch_size=4, shuffle=True,
                          hue_aug=True, random_crop_to_size=True)
 
 # build network graph
@@ -47,7 +47,7 @@ net = ColorHandPose3DNetwork()
 hand_mask_pred = net.inference_detection(data['image'], train=True)
 
 # Start TF
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.8)
+gpu_options = tf.GPUOptions(allow_growth=True,)
 sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 tf.train.start_queue_runners(sess=sess)
 
@@ -80,7 +80,7 @@ if not os.path.exists(train_para['snapshot_dir']):
     print('Created snapshot dir:', train_para['snapshot_dir'])
 
 # Training loop
-for i in range(train_para['max_iter']):
+for i in tqdm(range(train_para['max_iter'])):
     _, loss_v = sess.run([train_op, loss])
 
     if (i % train_para['show_loss_freq']) == 0:

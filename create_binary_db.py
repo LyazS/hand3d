@@ -28,14 +28,17 @@ from __future__ import print_function, unicode_literals
 import pickle
 import os
 import scipy.misc
+import cv2
 import struct
+import imageio
+from tqdm import tqdm
 
 # SET THIS to where RHD is located on your machine
-path_to_db = './RHD_published_v2/'
+path_to_db = "/workspace/cpfs-data/datasets/RHD_published_v2/"
 
 # chose if you want to create a binary for training or evaluation set
-# set = 'training'
-set = 'evaluation'
+set = 'training'
+# set = 'evaluation'
 
 ### No more changes below this line ###
 
@@ -101,10 +104,10 @@ with open(os.path.join(path_to_db, set, 'anno_%s.pickle' % set), 'rb') as fi:
 # iterate samples of the set and write to binary file
 with open(file_name_out, 'wb') as fo:
     num_samples = len(anno_all.items())
-    for sample_id, anno in anno_all.items():
+    for _,(sample_id, anno) in tqdm(enumerate(anno_all.items()),total=num_samples):
         # load data
-        image = scipy.misc.imread(os.path.join(path_to_db, set, 'color', '%.5d.png' % sample_id))
-        mask = scipy.misc.imread(os.path.join(path_to_db, set, 'mask', '%.5d.png' % sample_id))
+        image = imageio.imread(os.path.join(path_to_db, set, 'color', '%.5d.png' % sample_id))
+        mask = imageio.imread(os.path.join(path_to_db, set, 'mask', '%.5d.png' % sample_id))
 
         # get info from annotation dictionary
         kp_coord_uv = anno['uv_vis'][:, :2]  # u, v coordinates of 42 hand keypoints, pixel
@@ -114,5 +117,5 @@ with open(file_name_out, 'wb') as fo:
 
         write_to_binary(fo, image, mask, kp_coord_xyz, kp_coord_uv, kp_visible, camera_intrinsic_matrix)
 
-        if (sample_id % 100) == 0:
-            print('%d / %d images done: %.3f percent' % (sample_id, num_samples, sample_id*100.0/num_samples))
+        # if (sample_id % 100) == 0:
+        #     print('%d / %d images done: %.3f percent' % (sample_id, num_samples, sample_id*100.0/num_samples))
