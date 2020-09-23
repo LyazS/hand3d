@@ -50,7 +50,7 @@ s = data['image_crop'].get_shape().as_list()
 keypoints_scoremap = tf.image.resize_images(keypoints_scoremap, (s[1], s[2]))
 
 # Start TF
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.8)
+gpu_options = tf.GPUOptions(allow_growth=True)
 sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 tf.train.start_queue_runners(sess=sess)
 

@@ -18,7 +18,7 @@
 from __future__ import print_function, unicode_literals
 import os
 
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 
 from utils.general import crop_image_from_xy
 from utils.canonical_trafo import canonical_trafo, flip_right_hand
@@ -29,7 +29,7 @@ class BinaryDbReader(object):
     """
         Reads data from a binary dataset created by create_binary_db.py
     """
-    def __init__(self, mode=None, batch_size=1, shuffle=True, use_wrist_coord=True, sigma=25.0, hand_crop=False,
+    def __init__(self, mode=None, batch_size=1, shuffle=True, use_wrist_coord=True, sigma=5.0, hand_crop=False,
                  random_crop_to_size=False,
                  scale_to_size=False,
                  hue_aug=False,
