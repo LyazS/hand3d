@@ -37,7 +37,7 @@ train_para = {'lr': [1e-4, 1e-5, 1e-6],
 # get dataset
 dataset = BinaryDbReader(mode='training',
                          batch_size=8, shuffle=True, use_wrist_coord=False,
-                         hand_crop=True, coord_uv_noise=True, crop_center_noise=True)
+                         hand_crop=True, coord_uv_noise=False, crop_center_noise=False)
 
 # build network graph
 data = dataset.get()
@@ -75,7 +75,11 @@ saver = tf.train.Saver(max_to_keep=1, keep_checkpoint_every_n_hours=4.0)
 rename_dict = {'CPM/PoseNet': 'PoseNet2D',
                '_CPM': ''}
 # load_weights_from_snapshot(sess, './weights/cpm-model-mpii', ['PersonNet', 'PoseNet/Mconv', 'conv5_2_CPM'], rename_dict)
-
+variable_names = [v.name for v in tf.trainable_variables()]
+values = sess.run(variable_names)
+for k,v in zip(variable_names, values):
+	print("Variable: ", k)
+	print("Shape: ", v.shape)
 # snapshot dir
 if not os.path.exists(train_para['snapshot_dir']):
     os.mkdir(train_para['snapshot_dir'])

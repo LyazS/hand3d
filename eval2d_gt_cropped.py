@@ -28,9 +28,9 @@ import numpy as np
 from data.BinaryDbReader import *
 from nets.ColorHandPose3DNetwork import ColorHandPose3DNetwork
 from utils.general import detect_keypoints, EvalUtil, load_weights_from_snapshot
-
+import matplotlib.pyplot as plt
 # flag that allows to load a retrained snapshot(original weights used in the paper are used otherwise)
-USE_RETRAINED = False
+USE_RETRAINED = True
 PATH_TO_SNAPSHOTS = './snapshots_posenet/'  # only used when USE_RETRAINED is true
 
 # get dataset
@@ -68,7 +68,7 @@ util = EvalUtil()
 # iterate dataset
 for i in range(dataset.num_samples):
     # get prediction
-    crop_scale, keypoints_scoremap_v, kp_uv21_gt, kp_vis = sess.run([data['crop_scale'], keypoints_scoremap, data['keypoint_uv21'], data['keypoint_vis21']])
+    image,crop_scale, keypoints_scoremap_v, kp_uv21_gt, kp_vis = sess.run([data["image_crop"],data['crop_scale'], keypoints_scoremap, data['keypoint_uv21'], data['keypoint_vis21']])
 
     keypoints_scoremap_v = np.squeeze(keypoints_scoremap_v)
     kp_uv21_gt = np.squeeze(kp_uv21_gt)
@@ -80,7 +80,6 @@ for i in range(dataset.num_samples):
     coord_uv_pred_crop = np.stack([coord_hw_pred_crop[:, 1], coord_hw_pred_crop[:, 0]], 1)
 
     util.feed(kp_uv21_gt/crop_scale, kp_vis, coord_uv_pred_crop/crop_scale)
-
     if (i % 100) == 0:
         print('%d / %d images done: %.3f percent' % (i, dataset.num_samples, i*100.0/dataset.num_samples))
 
